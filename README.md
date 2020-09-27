@@ -1,1 +1,1 @@
-# dubbo-use-demo
+# just a use case while learning dubbo
