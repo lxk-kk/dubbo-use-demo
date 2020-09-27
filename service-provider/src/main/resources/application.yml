@@ -1,0 +1,14 @@
+dubbo:
+  application:
+    name: service-provider
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    name: dubbo
+    port: 20880
+  monitor:
+    protocol: registry
+#  这里并没有配置 暴露服务，在应用程序中通过 dubbo 的 @Service 注解配置
+
+server:
+  port: 8081
