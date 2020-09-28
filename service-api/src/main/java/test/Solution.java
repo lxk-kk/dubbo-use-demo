@@ -1,68 +1,85 @@
 package test;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+class Solution {
+    private int[] rone;
+    private int[] rtwo;
 
-public class Solution {
-    public int count;
-    public HashSet<Integer> set = new HashSet<>();
-
-    public int sum;
-      public class Interval {
-          int start;
-          int end;
-
-          public Interval(int a, int b) {
-              this.start = a;
-              this.end = b;
-          }
-      }
-
-    public Interval trim(int N, int M, Interval[] conn) {
-        HashMap<Integer, List<Integer>> map = new HashMap<>();
-        for (Interval interval : conn) {
-            if (map.containsKey(interval.start)) {
-                map.get(interval.start).add(interval.end);
-            } else {
-                ArrayList<Integer> arrayList = new ArrayList<>();
-                arrayList.add(interval.end);
-                map.put(interval.start, arrayList);
-            }
-        }
-        List<Integer> start = map.get(0);
-        set.add(0);
-        for (int key : start) {
-            if (set.contains(key)) {
-                continue;
-            }
-            set.add(key);
-            judge(map, 0, 0, key);
-        }
-        return new Interval(count, sum);
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        solution.checkInclusion("ky", "ainwkckifykxlribaypk");
     }
 
-    private void judge(HashMap<Integer, List<Integer>> map, int count, int sum, int key) {
-        if (key == 0) {
-            this.count += count;
-            this.sum = (this.sum + sum) % 1000000007;
-            return;
+    public boolean checkInclusion(String s1, String s2) {
+        if(s1.length() > s2.length()){
+            return false;
         }
-        if (!map.containsKey(key)) {
-            return;
+        rone = new int[26];
+        rtwo = new int[26];
+
+        for(int i = 0; i < s1.length(); ++i){
+            rone[s1.charAt(i) - 'a']++;
+            rtwo[s2.charAt(i) - 'a']++;
         }
-        if (!set.contains(key)) {
-            count++;
-            sum = (sum + key) % 1000000007;
+
+        boolean go = true;
+        // 多余的
+        int illegal = 0;
+        // 缺失的
+        int legal = 0;
+        for(int i = 0; i < 26; ++i){
+            if(rone[i] > 0 && rtwo[i] == 0){
+                legal++;
+            } else if(rone[i] == 0 && rtwo[i] > 0){
+                illegal++;
+            }
+            go = go && (rone[i] == rtwo[i]);
         }
-        List<Integer> arrayList = map.get(key);
-        for (int tempKey : arrayList) {
-            if (!set.contains(tempKey)) {
+
+        int pre = 0;
+        int end = s1.length();
+        for(; !go && end < s2.length(); ++pre, ++end){
+            int preIdx = s2.charAt(pre) - 'a';
+            int nowIdx = s2.charAt(end) - 'a';
+
+            rtwo[preIdx]--;
+            if(rtwo[preIdx] == 0){ // 有 -> 无
+                if(rone[preIdx] == 0){ // 不是目标
+                    illegal--;
+                } else { // 是目标
+                    legal++;
+                }
+
+            }
+
+            rtwo[nowIdx]++;
+            if(rtwo[nowIdx] == 1){ // 无 -> 有
+                if(rone[nowIdx] > 0){ // 是目标
+                    legal--;
+                } else { // 不是目标
+                    illegal++;
+                }
+            }
+            if(rtwo[preIdx] != rone[preIdx] || rone[nowIdx] != rtwo[nowIdx]){
                 continue;
             }
-            judge(map, count , sum, tempKey);
+            if(illegal == 0 && legal == 0){
+                continue;
+            }
+            if (preIdx == nowIdx) {
+                continue;
+            }
+            go = judge();
         }
+        return go;
+    }
+    private boolean judge(){
+        for(int i = 0; i < 26; ++i){
+            if(rone[i] == rtwo[i]){
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 }
